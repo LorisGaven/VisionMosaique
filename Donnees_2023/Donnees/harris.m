@@ -25,24 +25,24 @@ if nargin < 2, TailleFenetre=9;  end;
 %       en utilisant la fonction gradient
 Im = double(Im);
 %%% A COMPLETER %%%
-%%% [Ii,Ij] = ...;
+[Ii,Ij] = gradient(Im);
 
 % (1.2) Calcul du filtre de lissage gaussien
 % Calcul de sigma en fonction de la taille de la fenetre  
 sig = (TailleFenetre - 1)/4;
 % Utilisation de fspecial
 %%% A COMPLETER %%%
-%%% L = ... ;
+L = fspecial('gaussian', TailleFenetre, sig);
 
 % (1.3) Calcul de la reponse R
 % Calcul des elements A, B et C puis calcul de la reponse suivant l'equation (1)
 % Utiliser conv2 avec l'option 'same' pour appliquer le filtre de lissage L
 %%% A COMPLETER %%%
 
-%%% A=...;
-%%% B=...;
-%%% C=...;
-%%% R=...;
+A= conv2(Ij.^2, L, 'same');
+B= conv2(Ii.^2, L, 'same');
+C= conv2(Ii .* Ij, L, 'same');
+R= (A .* B - C.^2) - k * (A + B) .^ 2;
 
 % (2.1) Suppression des non-maxima locaux suivant l'equation (2)
 % ATTENTION : il faut gérer le cas particulier des bords
@@ -54,8 +54,8 @@ n2=floor(TailleFenetre/2);
 Res=zeros(l,c);
 for i=(n2+1):(l-n2)
   for j=(n2+1):(c-n2)
-%%%    if R(i,j)==... 
-%%%      Res(i,j)=R(i,j);
+    if R(i,j) == max(R(i-n2:i+n2, j-n2:j+n2), [], 'all')
+        Res(i,j) = R(i,j);
     end;
   end;
 end;
@@ -63,16 +63,16 @@ end;
 % (2.2) Selection des NbPoints en fonction de "NbPoints" reponses les plus fortes
 % Tri des reponses : utiliser sort en LINEARISANT Res au préalable
 %%% A COMPLETER %%%
-%%% [s,is]=sort(...);
+[s,is]=sort(Res(:), 'descend');
 
 % Selection des indices de NbPoints de plus fortes reponses
 %%% A COMPLETER %%%
-%%% is=...;
+is = is(1:NbPoints);
 
 % Calcul des indices dans l'image 
 % Utiliser ind2sub, attention a l'ordre pour recuperer les coordonnees
-%%% A COMPLE	TER %%%
-%%% [Y,X]= ...;
+%%% A COMPLETER %%%
+[Y,X]= ind2sub(size(Im), is);
 
 %%% A COMPLETER %%%
-%%% XY = ...
+XY = [X Y];

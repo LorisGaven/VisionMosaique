@@ -24,18 +24,18 @@ seuil = 0.75;
 % Detection des points d'interet avec Harris %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A DECOMMENTER POUR OBSERVER LA DETECTION DE HARRIS
-% [XY_1,Res_1] = harris(Im1,TailleFenetre,NbPoints,k);
-% [XY_2,Res_2] = harris(Im2,TailleFenetre,NbPoints,k);
-% figure;
-% affichage_POI(Im1,XY_1,'POI Image 1',1,2,1);
-% affichage_POI(Im2,XY_2,'POI Image 2',1,2,2);
+[XY_1,Res_1] = harris(Im1,TailleFenetre,NbPoints,k);
+[XY_2,Res_2] = harris(Im2,TailleFenetre,NbPoints,k);
+figure;
+affichage_POI(Im1,XY_1,'POI Image 1',1,2,1);
+affichage_POI(Im2,XY_2,'POI Image 2',1,2,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Appariement des points d'interet %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A DECOMMENTER POUR OBSERVER LA MISE EN CORRESPONDANCE 
 % avec/sans verification des contraintes
-% [XY_C1,XY_C2] = apparier_POI(Im1,XY_1,Im2,XY_2,TailleFenetre,seuil);
+[XY_C1,XY_C2] = apparier_POI(Im1,XY_1,Im2,XY_2,TailleFenetre,seuil);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estimation (et verification) de l'homographie %

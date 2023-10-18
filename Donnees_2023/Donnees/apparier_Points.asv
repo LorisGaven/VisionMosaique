@@ -68,7 +68,7 @@ v2 = var(vois2, [], 2);
 % Pour chaque combinaison de paires de points, la covariance 
 % entre les deux voisinages : le numerateur dans la formule ZNCC
 %v12 = mean((vois1(i1) - m1(i1)) .* (vois2(i2) - m2(i2)), 2);
-%TODO
+v12 = zeros()
 
 % Calcul du score de correlation : 
 % ajouter le denominateur dans la formule ZNCC 

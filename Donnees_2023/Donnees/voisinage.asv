@@ -24,10 +24,10 @@ K = floor(TailleFenetre/2);
 %% A COMPLETER %%
 %%%%%%%%%%%%%%%%%
 
+n2 = floor(TailleFenetre/2);
 voisins = zeros(npt, TailleFenetre^2);
 for i = 1:npt
-    v = I(xyPt(i, 2)-K:xyPt(i, 2)+K, xyPt(i, 1)-K:xyPt(i, 1)+K);
-    voisins(i, :) = v(:);
+    voisins(i, :) = I(xyPt(i, 2) )
 end
 
 end
