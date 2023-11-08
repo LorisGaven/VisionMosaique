@@ -16,7 +16,7 @@ affichage_image(Im2,'Image 2',1,2,2);
 
 % Choix des parametres
 TailleFenetre = 15;
-NbPoints = 150 ;
+NbPoints = 100 ;
 k = 0.05;
 seuil = 0.75;
 
@@ -85,42 +85,39 @@ imwrite(uint8(Imoscoul),'mosaique2_coul.pgm');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Appariement des points d'interet entre les images 2 et 3 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-seuil = 0.9;
-[XY_C2bis, XY_C3] = apparier_POI(Im2,XY_2,Im3,XY_3,TailleFenetre,seuil);
+[XY_C2bis, XY_C3] = apparier_POI(Im2_coul,XY_2,Im3_coul,XY_3,TailleFenetre,seuil);
 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estimation de l'homographie entre les images 2 et 3 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-H2 = homographie(XY_C2bis, XY_C3);
+H2 = homographie(XY_C2,XY_C3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calcul de la mosaique entre les images 2 et 3 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Imoscoul2 = mosaiquecoul(Im2_coul, Im3_coul, H2);
 figure;
-affichage_image(uint8(Imoscoul2),'Mosaique obtenue a partir des 2 images couleur initiales (version 4)',1,1,1);
+affichage_image(uint8(Imoscoul2),'Mosaique obtenue a partir des 2 images couleur initiales (version 2)',1,1,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Detection des points d'interet avec Harris dans la mosaique   % 
 % entre les images 2 et 3                                       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Imos2 = rgb2gray(uint8(Imoscoul2));
-[XY_mos2,Res_mos2] = harris(Imos2,TailleFenetre,NbPoints,k);
+[XY_mos2,Res_mos2] = harris(im2grey(Imoscoul2,TailleFenetre,NbPoints,k);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Appariement des points d'interet entre la premiere image % 
 % et la mosaique des images 2 et 3                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-seuil = 0.92;
-[XY_Cmos2, XY_C1bis] = apparier_POI(Imos2,XY_mos2,Im1,XY_1,TailleFenetre,seuil);
+[XY_C1bis,XY_Cmos2] = apparier_POI(Im1_coul,XY_1,Imoscoul2,XY_mos2,TailleFenetre,seuil);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estimation de l'homographie entre la premiere image      % 
 % et la mosaique des images 2 et 3                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-H3 = homographie(XY_Cmos2, XY_C1bis);
-Imoscoul1 = mosaiquecoul(uint8(Imoscoul2), Im1_coul, H3);
+H3 = homographie(XY_C1bis, XY_Cmos2);
+Imoscoul1 = mosaiquecoul(Im1_coul, Imoscoul2, H3);
 
 % Affichage de l'image reconstruite
 figure;
