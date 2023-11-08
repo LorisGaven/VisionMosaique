@@ -31,15 +31,22 @@ function [H] = homographie(XY_C1,XY_C2)
 
 % Stocker dans une variable le nombre de points apparies
 % ... A completer ...
+nb_points = size(XY_C1, 1);
 
 % Construction des matrices/vecteurs utiles pour construire la matrice A
-% NE PAS UTILISER DE BOUCLE FORT
+% NE PAS UTILISER DE BOUCLE FOR
 % ... A completer ...
+A = zeros(2 * nb_points, 9);
+A(1:2:end, :) = [XY_C1 ones(nb_points, 1) zeros(nb_points, 3) -XY_C2(:, 1) .* XY_C1(:, 1) -XY_C2(:, 1) .* XY_C1(:, 2) -XY_C2(:, 1)];
+A(2:2:end, :) = [zeros(nb_points, 3) XY_C1 ones(nb_points, 1) -XY_C2(:, 2) .* XY_C1(:, 1) -XY_C2(:, 2) .* XY_C1(:, 2) -XY_C2(:, 2)];
 
 % Estimation des parametres de H par decomposition en valeurs singulieres
 % Utiliser la fonction matlab svd : 
 % H est le vecteur propre associee a la plus petite valeur propre de A^TA
 % ... A completer ...
+[U, S, V] = svd(A' * A);
+h = V(:, end);
 
 % Former la matrice H de taille 3x3
 % ... A completer ...
+H = [ h(1) h(2) h(3); h(4) h(5) h(6); h(7) h(8) h(9)];

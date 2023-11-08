@@ -28,7 +28,8 @@ ind2_1 = ind2_1(:);
 %% PARTIE A MODIFIER AFIN D'APPLIQUER SYMETRIE ET SEUILLAGE %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Cette premiere ligne doit etre modifiee pour appliquer les contraintes souhaitees % 
-ind1=ind1_2;
+symmetric_indices = (ind2_1(ind1_2) == (1:NbPoints)') & (maxI1' > seuil);
+ind1 = find(symmetric_indices);
 
 % Cette deuxieme doit etre gardee telle quelle
 ind2 = ind1_2(ind1);
