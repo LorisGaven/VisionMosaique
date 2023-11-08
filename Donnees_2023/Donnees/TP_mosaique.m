@@ -67,7 +67,7 @@ imwrite(uint8(Imosbis),'mosaique2_bis.pgm');
 % Version 3 pour la reconstruction avec les couleurs R, G et B %
 % A DECOMMENTER QUAND MOSAIQUECOUL AURA ETE ECRITE             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Imoscoul = mosaiquecoul(Im1_coul,Im2_coul,H);
+[Imoscoul, ~] = mosaiquecoul(Im1_coul,Im2_coul,H);
 figure;
 affichage_image(uint8(Imoscoul),'Mosaique obtenue a partir des 2 images couleur initiales (version 2)',1,1,1);
 % SAUVEGARDE DE LA MOSAIQUE A DEUX IMAGES EN COULEUR VERSION 2
@@ -97,7 +97,7 @@ H2 = homographie(XY_C2bis, XY_C3);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calcul de la mosaique entre les images 2 et 3 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Imoscoul2 = mosaiquecoul(Im2_coul, Im3_coul, H2);
+[Imoscoul2, ~] = mosaiquecoul(Im2_coul, Im3_coul, H2);
 figure;
 affichage_image(uint8(Imoscoul2),'Mosaique obtenue a partir des 2 images couleur initiales (version 4)',1,1,1);
 
@@ -112,15 +112,28 @@ Imos2 = rgb2gray(uint8(Imoscoul2));
 % Appariement des points d'interet entre la premiere image % 
 % et la mosaique des images 2 et 3                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-seuil = 0.92;
+seuil = 0.8;
 [XY_Cmos2, XY_C1bis] = apparier_POI(Imos2,XY_mos2,Im1,XY_1,TailleFenetre,seuil);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estimation de l'homographie entre la premiere image      % 
 % et la mosaique des images 2 et 3                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-H3 = homographie(XY_Cmos2, XY_C1bis);
-Imoscoul1 = mosaiquecoul(uint8(Imoscoul2), Im1_coul, H3);
+nb_iteration = 10;
+distance_best = Inf;
+for i = 1:nb_iteration
+    i
+    perm = randperm(size(XY_Cmos2, 1));
+    idx = perm(1:6);
+    H3 = homographie(XY_Cmos2(idx,:), XY_C1bis(idx,:));
+    [~, distance] = mosaiquecoul(uint8(Imoscoul2), Im1_coul, H3);
+    if distance_best > distance
+        distance_best = distance;
+        best_H = H3;
+    end
+end
+
+[Imoscoul1, distance] = mosaiquecoul(uint8(Imoscoul2), Im1_coul, best_H);
 
 % Affichage de l'image reconstruite
 figure;

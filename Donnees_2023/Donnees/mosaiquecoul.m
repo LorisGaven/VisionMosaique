@@ -7,7 +7,7 @@
 % C'est la raison pour laquelle on inverse les lignes et les colonnes 
 % dans la reconstruction de la mosaique. 
 
-function [Imos] = mosaiquecoul(I1,I2,H)
+function [Imos, distance] = mosaiquecoul(I1,I2,H)
 
 % On recupere la taille des deux images. 
 [nblI1 nbcI1, nb_canal1] = size(I1);
@@ -59,6 +59,11 @@ nbcImos=xmax-xmin+1;
 
 Imos=zeros(nblImos,nbcImos, nb_canal1);
 
+if nblImos * nbcImos > 10000000
+    distance = Inf;
+    return
+end
+
 % Calcul de l'origine de l'image I1 dans le repere de la mosaique Imos. 
 O1x_Rmos = 1-(xmin-1);
 O1y_Rmos = 1-(ymin-1);
@@ -67,6 +72,7 @@ O1y_Rmos = 1-(ymin-1);
 % Lignes et colonnes sont inversees. 
 Imos(O1y_Rmos:O1y_Rmos+nblI1-1, O1x_Rmos:O1x_Rmos+nbcI1-1, :) = I1;
 
+distance = 0;
 % Copie de l'image I2 transformee par l'homographie H. 
 for x=1:nbcImos
   for y=1:nblImos
@@ -87,12 +93,13 @@ for x=1:nbcImos
     % On verifie que xy_R2 appartient bien a l'image I2 
     % avant d'affecter cette valeur a Imos
     % Lignes et colonnes sont inversees. 
-    if(x_R2>=1 && x_R2<=nbcI2 && y_R2>=1 && y_R2<=nblI2 && x_R1>=1 && x_R1<=nbcI1 && y_R1>=1 && y_R1<=nblI1)
+    if(x_R2>=1 && x_R2<=nbcI2 && y_R2>=1 && y_R2<=nblI2 && x_R1>=1 && x_R1<=nbcI1 && y_R1>=1 && y_R1<=nblI1 && sum(I1(y_R1, x_R1, :)) ~= 0)
           d1 = nbcI1 - x_R1;
           d2 = x_R2;
           p1 = d1 / (d1 + d2);
           p2 = d2 / (d1 + d2);
           Imos(y, x, :)= p1 * I1(y_R1, x_R1, :) + p2 * I2(y_R2, x_R2, :);
+          distance = distance + sum((I1(y_R1, x_R1, :) - I2(y_R2, x_R2, :)).^2);
     elseif (x_R2 >= 1 && x_R2 <= nbcI2 && y_R2 >= 1 && y_R2 <= nblI2)
         Imos(y, x, :)= I2(y_R2, x_R2, :);
     end
