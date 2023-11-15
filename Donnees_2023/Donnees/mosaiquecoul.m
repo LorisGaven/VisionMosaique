@@ -27,7 +27,7 @@ xy_coinsI2_R2 = [1 1; nbcI2 1; nbcI2 nblI2; 1 nblI2];
 
 % Application de l'homographie Hinv sur ces coins. 
 % Calcul des images des coins dans I1. 
-xy_coinsI2_R1 = appliquerHomographie(Hinv,xy_coinsI2_R2)
+xy_coinsI2_R1 = appliquerHomographie(Hinv,xy_coinsI2_R2);
 
 % Determination des dimensions de l'image mosaique, 
 % les xmin ymin xmax ymax, ou :
@@ -41,12 +41,16 @@ ymin=min([xy_coinsI2_R1(:,2)' 1]);
 xmax=max([xy_coinsI2_R1(:,1)' nbcI1]);
 ymax=max([xy_coinsI2_R1(:,2)' nblI1]);
 
+xmin2=min([xy_coinsI2_R2(:,1)' 1]);
+
 % On arrondit de maniere a etre certain d'avoir les coordonnees initiales
 % bien comprises dans l'image. 
 xmin=floor(xmin);
 ymin=floor(ymin);
 xmax=ceil(xmax);
 ymax=ceil(ymax);
+
+xmin2=floor(xmin2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CONTRUCTION DE LA MOSAIQUE %
@@ -59,7 +63,7 @@ nbcImos=xmax-xmin+1;
 
 Imos=zeros(nblImos,nbcImos, nb_canal1);
 
-if nblImos * nbcImos > 10000000
+if nblImos * nbcImos > 50000000
     distance = Inf;
     return
 end
@@ -67,6 +71,10 @@ end
 % Calcul de l'origine de l'image I1 dans le repere de la mosaique Imos. 
 O1x_Rmos = 1-(xmin-1);
 O1y_Rmos = 1-(ymin-1);
+
+O2x_Rmos = 1-(xmin2-1);
+
+gauche = O1x_Rmos > O2x_Rmos;
 
 % Copie de l'image I1. 
 % Lignes et colonnes sont inversees. 
@@ -94,12 +102,17 @@ for x=1:nbcImos
     % avant d'affecter cette valeur a Imos
     % Lignes et colonnes sont inversees. 
     if(x_R2>=1 && x_R2<=nbcI2 && y_R2>=1 && y_R2<=nblI2 && x_R1>=1 && x_R1<=nbcI1 && y_R1>=1 && y_R1<=nblI1 && sum(I1(y_R1, x_R1, :)) ~= 0)
-          d1 = nbcI1 - x_R1;
-          d2 = x_R2;
-          p1 = d1 / (d1 + d2);
-          p2 = d2 / (d1 + d2);
-          Imos(y, x, :)= p1 * I1(y_R1, x_R1, :) + p2 * I2(y_R2, x_R2, :);
-          distance = distance + sum((I1(y_R1, x_R1, :) - I2(y_R2, x_R2, :)).^2);
+        if gauche 
+            d1 = x_R1;
+            d2 = nbcI2 - x_R2;
+        else
+            d1 = nbcI1 - x_R1;
+            d2 = x_R2;
+        end
+        p1 = d1 / (d1 + d2);
+        p2 = d2 / (d1 + d2);
+        Imos(y, x, :)= p1 * I1(y_R1, x_R1, :) + p2 * I2(y_R2, x_R2, :);
+        distance = distance + sum((I1(y_R1, x_R1, :) - I2(y_R2, x_R2, :)).^2);
     elseif (x_R2 >= 1 && x_R2 <= nbcI2 && y_R2 >= 1 && y_R2 <= nblI2)
         Imos(y, x, :)= I2(y_R2, x_R2, :);
     end

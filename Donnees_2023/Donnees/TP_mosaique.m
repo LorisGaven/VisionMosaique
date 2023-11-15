@@ -114,6 +114,7 @@ Imos2 = rgb2gray(uint8(Imoscoul2));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 seuil = 0.8;
 [XY_Cmos2, XY_C1bis] = apparier_POI(Imos2,XY_mos2,Im1,XY_1,TailleFenetre,seuil);
+%[XY_C1bis, XY_Cmos2] = apparier_POI(Im1,XY_1,Imos2,XY_mos2,TailleFenetre,seuil);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estimation de l'homographie entre la premiere image      % 
@@ -126,14 +127,18 @@ for i = 1:nb_iteration
     perm = randperm(size(XY_Cmos2, 1));
     idx = perm(1:6);
     H3 = homographie(XY_Cmos2(idx,:), XY_C1bis(idx,:));
+    %H3 = homographie(XY_C1bis(idx,:), XY_Cmos2(idx,:));
     [~, distance] = mosaiquecoul(uint8(Imoscoul2), Im1_coul, H3);
+    %[~, distance] = mosaiquecoul(Im1_coul, uint8(Imoscoul2), H3);
     if distance_best > distance
         distance_best = distance;
         best_H = H3;
+        idx_best = idx;
     end
 end
 
-[Imoscoul1, distance] = mosaiquecoul(uint8(Imoscoul2), Im1_coul, best_H);
+[Imoscoul1, ~] = mosaiquecoul(uint8(Imoscoul2), Im1_coul, best_H);
+%[Imoscoul1, ~] = mosaiquecoul(Im1_coul, uint8(Imoscoul2), best_H);
 
 % Affichage de l'image reconstruite
 figure;
